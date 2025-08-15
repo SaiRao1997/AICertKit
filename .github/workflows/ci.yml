@@ -1,7 +1,5 @@
 name: CI
-on:
-  push:
-  pull_request:
+on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -11,5 +9,10 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -m pip install --upgrade pip
-      - run: pip install -e .[dev]
-      - run: pytest -q
+      - run: pip install pytest pyyaml
+      - name: Debug workspace (once)
+        run: |
+          pwd
+          ls -la
+          head -n 20 pyproject.toml || true
+      - run: PYTHONPATH=. pytest -q
