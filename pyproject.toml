@@ -1,4 +1,3 @@
-$py = @'
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
@@ -22,5 +21,3 @@ dev = ["pytest>=7.4", "ruff>=0.4", "pyyaml>=6.0"]
 [tool.setuptools.packages.find]
 include = ["aicertkit*"]
 exclude = ["tests*", "fixtures*", ".github*"]
-'@
-Set-Content .\pyproject.toml -Value $py -Encoding utf8NoBOM
