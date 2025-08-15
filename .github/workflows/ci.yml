@@ -1,5 +1,8 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -8,11 +11,36 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python -m pip install --upgrade pip
-      - run: pip install pytest pyyaml
-      - name: Debug workspace (once)
+
+      # Debug once; remove after green
+      - name: Debug workspace
         run: |
           pwd
           ls -la
+          echo "----- head pyproject.toml -----"
           head -n 20 pyproject.toml || true
-      - run: PYTHONPATH=. pytest -q
+
+      # Early validation: catch BOM/format
+      - name: Validate pyproject.toml with tomllib
+        run: |
+          python - <<'PY'
+          import tomllib, pathlib
+          b = pathlib.Path('pyproject.toml').read_bytes()
+          print("First bytes:", b[:4])  # must NOT start with b'\xef\xbb\xbf'
+          tomllib.loads(b)
+          print("pyproject.toml OK")
+          PY
+
+      - run: python -m pip install --upgrade pip
+      - name: Install (editable) or fall back to source
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if ! pip install -e .[dev]; then
+            echo "Editable install failed; running tests from source."
+            pip install pytest pyyaml ruff
+            PYTHONPATH=. pytest -q
+            exit 0
+          fi
+      - name: Run tests
+        run: pytest -q
