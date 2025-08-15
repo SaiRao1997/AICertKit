@@ -1,0 +1,26 @@
+$py = @'
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aicertkit"
+version = "0.1.0"
+description = "Scan a repo and output an AI-Act–ready Compliance Bundle"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [{ name = "AICertKit Maintainers" }]
+dependencies = []
+
+[project.scripts]
+aicertkit = "aicertkit.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "ruff>=0.4", "pyyaml>=6.0"]
+
+[tool.setuptools.packages.find]
+include = ["aicertkit*"]
+exclude = ["tests*", "fixtures*", ".github*"]
+'@
+Set-Content .\pyproject.toml -Value $py -Encoding utf8NoBOM
